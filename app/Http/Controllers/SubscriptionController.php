@@ -24,4 +24,6 @@ class SubscriptionController extends Controller
     {
         $clientToken = $this->gateway->clientToken()->generate();
     }
+
+    
 }
