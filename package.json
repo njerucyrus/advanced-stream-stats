@@ -22,6 +22,8 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
+        "braintree-web": "^3.88.1",
+        "paypal-checkout": "^4.0.336",
         "vue-braintree": "^2.1.0"
     }
 }
