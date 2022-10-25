@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payment_methods', function (Blueprint $table) {
-
             $table->id();
             $table->string('user_id')->nullable();
             $table->string('customer_id')->nullable();
