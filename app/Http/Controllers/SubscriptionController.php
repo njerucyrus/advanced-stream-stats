@@ -41,6 +41,8 @@ class SubscriptionController extends Controller
     }
     public function createSubscription(Request $request)
     {
+        $paymentMethod = $this->gateway->paymentMethod()->find('fsgjht0s');
+        // print_r(json_encode($paymentMethod))
         // $customer = $this->gateway->customer()->create([
         //     'firstName' => 'Mike',
         //     'lastName' => 'Jones',
@@ -52,17 +54,18 @@ class SubscriptionController extends Controller
         // ]);
         // dd($customer);
 
-        $nonce = "tokencc_bj_8pys48_mcnp4v_32qy9p_58mv5g_875";
-        $result = $this->gateway->paymentMethod()->create([
-            'customerId' => "204388807",
-            'paymentMethodNonce' => $nonce,
-        ]);
-        $subscription = $this->gateway->subscription()->create([
-            'paymentMethodToken' => 'fsgjht0s',
-            "planId" => "bdpr"
-        ]);
+        // $nonce = "tokencc_bj_8pys48_mcnp4v_32qy9p_58mv5g_875";
+        // $result = $this->gateway->paymentMethod()->create([
+        //     'customerId' => "204388807",
+        //     'paymentMethodNonce' => $nonce,
+        // ]);
+        // $subscription = $this->gateway->subscription()->create([
+        //     'paymentMethodToken' => 'fsgjht0s',
+        //     "planId" => "bdpr"
+        // ]);
 
-        //dd($result);
-        dd($subscription);
+        // //dd($result);
+        // dd($subscription);
+        return response()->json($paymentMethod);
     }
 }
