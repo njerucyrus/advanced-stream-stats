@@ -7,12 +7,10 @@ import Pricing from './Pricing.vue'
 import { Head } from '@inertiajs/inertia-vue3';
 
 const props = defineProps({
-    'plans':Object
+    'plans': Object,
+    'subscriptions': Object
 
 });
-
-
-
 
 
 

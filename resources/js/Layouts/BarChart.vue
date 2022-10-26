@@ -48,7 +48,7 @@ export default {
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [{
                     label: 'Channel Viewers',
-                    data: [65, 59, 80, 81, 56, 55, 40],
+                    data: [8791, 9800, 6780, 8789, 9850, 7894, 12789],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(255, 159, 64, 0.2)',

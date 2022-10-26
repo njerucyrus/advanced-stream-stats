@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subscription;
 use Braintree\Gateway;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -27,12 +29,22 @@ class DashboardController extends Controller
     public function index()
     {
         $plans = [];
+        $subscriptions = Subscription::query()
+        ->where('user_id', Auth::id())
+        ->where('status', 'Active')
+        ->get();
+
         try {
             $plans = $this->gateway->plan()->all();
         } catch (Exception $ex) {
         }
+        if ($subscriptions->count() > 0) {
+            return redirect()->route('stats');
+        } else {
         return Inertia::render('Dashboard', [
-            'plans' => $plans,
+                'plans' => $plans
+            
         ]);
+    }
     }
 }
