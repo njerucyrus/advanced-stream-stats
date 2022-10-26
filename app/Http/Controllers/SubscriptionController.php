@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Braintree\Gateway;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,23 @@ class SubscriptionController extends Controller
     }
     public function createSubscription(Request $request)
     {
+        $planId = $request->input('plan_id');
+
+        //check if we have an existing subscription
+        $subscription = Subscription::query()->where(
+            [
+                'user_id' => Auth::id(),
+                'plan_id' => $planId
+            ]
+        )->first();
+
+        if ($subscription) {
+            //user already subscribed so we will update the subscription.
+        } else {
+            // this is the first time to subscribe to we will create the subscription
+        }
+       
+
         $paymentMethod = $this->gateway->paymentMethod()->find('fsgjht0s');
         // print_r(json_encode($paymentMethod))
         // $customer = $this->gateway->customer()->create([
@@ -53,19 +71,20 @@ class SubscriptionController extends Controller
         //     'website' => 'http://example.com'
         // ]);
         // dd($customer);
+        $paypalToken = 'f3hs61wg';
 
-        // $nonce = "tokencc_bj_8pys48_mcnp4v_32qy9p_58mv5g_875";
+        // $nonce = "e79cf7a2-2eba-0935-c879-2d9ca18402f4";
         // $result = $this->gateway->paymentMethod()->create([
         //     'customerId' => "204388807",
         //     'paymentMethodNonce' => $nonce,
         // ]);
-        // $subscription = $this->gateway->subscription()->create([
-        //     'paymentMethodToken' => 'fsgjht0s',
-        //     "planId" => "bdpr"
-        // ]);
+        $subscription = $this->gateway->subscription()->create([
+            'paymentMethodToken' => $paypalToken,
+            "planId" => "rc32"
+        ]);
 
-        // //dd($result);
+        //dd($result);
         // dd($subscription);
-        return response()->json($paymentMethod);
+        return response()->json($subscription);
     }
 }

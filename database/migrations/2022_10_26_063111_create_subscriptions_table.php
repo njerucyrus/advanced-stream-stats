@@ -14,14 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('subscriptions', function (Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('user_id');
-            $table->string('name');
-            $table->string('braintree_id');
-            $table->string('braintree_plan');
-            $table->integer('quantity');
-            $table->timestamp('trial_ends_at')->nullable();
-            $table->timestamp('ends_at')->nullable();
+            $table->id();
+            $table->string('user_id')->nullable();
+            $table->string('plan_id')->nullable();
+            $table->string('subscription_id')->nullable();
+            $table->string('status')->default('Active');
             $table->timestamps();
         });
     }

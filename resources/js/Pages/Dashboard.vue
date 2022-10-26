@@ -2,12 +2,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatItem from '@/Layouts/StatItem.vue'
 import PaymentForm from '@/Layouts/PaymentForm.vue'
+import CheckoutUI from '@/Layouts/CheckoutUI.vue'
 import { Head } from '@inertiajs/inertia-vue3';
 
 defineProps({
     'plans':Object,
     'token':String
 })
+
 </script>
 
 <template>
@@ -37,13 +39,13 @@ defineProps({
                             <h2 class="mt-4 text-2xl font-bold">Your Stream Stats</h2>
                         
                             <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                                <StatItem title="Messages" value="400"></StatItem>
+                                <StatItem title="Messages" value="600"></StatItem>
                                 <StatItem title="Messages" value="400"></StatItem>
                                 <StatItem title="Messages" value="400"></StatItem>
                                 <StatItem title="Messages" value="400"></StatItem>
                             </div>
-                        
-                            <PaymentForm></PaymentForm>
+                            <CheckoutUI ></CheckoutUI>
+                            <!-- <PaymentForm></PaymentForm> -->
                         </div>
                     </div>
                 </div>

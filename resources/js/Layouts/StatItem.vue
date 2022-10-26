@@ -1,12 +1,9 @@
-<script>
- export default {
-    name: "StatItem",
-    props: {
-        'title': String,
-        'value':String
-    }
- }
-   
+<script setup>
+
+defineProps({
+  'title': String,
+  'value': String
+})
 </script>
 <template>
 
