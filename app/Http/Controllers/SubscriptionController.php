@@ -26,6 +26,8 @@ class SubscriptionController extends Controller
         );
     }
 
+   
+
     public function token(Request $request)
     {
         $clientToken = $this->gateway->clientToken()->generate();
@@ -33,11 +35,7 @@ class SubscriptionController extends Controller
 
     public function showSubscriptionForm(Request $request)
     {
-    
-        $plans = $this->gateway->plan()->all();
-        return Inertia::render('Dashboard', [
-            'plans' => $plans,   
-        ]);
+    //show the checkout form
     }
     public function createSubscription(Request $request)
     {

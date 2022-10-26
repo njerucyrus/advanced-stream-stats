@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StreamStatsController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Application;
@@ -17,20 +18,10 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/subscriptions', [SubscriptionController::class, 'showSubscriptionForm']);
+Route::get('/', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::post('/subscriptions/create', [SubscriptionController::class, 'createSubscription'])->name('create_subscription');
 Route::get('/stats', [StreamStatsController::class, 'index'])->name('stats');
