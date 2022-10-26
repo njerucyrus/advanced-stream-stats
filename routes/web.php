@@ -31,6 +31,6 @@ Route::get('/dashboard', function () {
 
 Route::get('/subscriptions', [SubscriptionController::class, 'showSubscriptionForm']);
 
-Route::get('/subscriptions/create', [SubscriptionController::class, 'createSubscription']);
+Route::get('/subscriptions/create', [SubscriptionController::class, 'test']);
 
 require __DIR__ . '/auth.php';

@@ -65,11 +65,14 @@ class PaymentMethodController extends Controller
             $cardType = "";
             $paypalEmail = "";
             $maskedNumber = "";
+            $paymentType = "";
 
             if ($result->cardType != '') {
                 $cardType = $result->cardType;
+                $paymentType = 'Credit Card';
                 $maskedNumber = $result->maskedNumber;
             } else {
+                $paymentType = 'Paypal';
                 $paypalEmail = $result->email;
             }
 
@@ -78,6 +81,7 @@ class PaymentMethodController extends Controller
                 'customer_id' => $customerId,
                 'token' => $result->token,
                 'paypal_email' => $paypalEmail,
+                'payment_type' => $paymentType,
                 'masked_number' => $maskedNumber,
                 'image_url' => $result->imageUrl
             ]);

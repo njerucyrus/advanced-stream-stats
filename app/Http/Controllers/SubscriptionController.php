@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentMethod;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Braintree\Gateway;
@@ -32,17 +33,17 @@ class SubscriptionController extends Controller
 
     public function showSubscriptionForm(Request $request)
     {
-        $clientToken = $this->gateway->clientToken()->generate();
-
+    
         $plans = $this->gateway->plan()->all();
         return Inertia::render('Dashboard', [
-            'plans' => $plans,
-            'token' => $clientToken
+            'plans' => $plans,   
         ]);
     }
     public function createSubscription(Request $request)
     {
+        $nonce = $request->input('nonce');
         $planId = $request->input('plan_id');
+        $paymentMethodType = $request->input('payment_method');
 
         //check if we have an existing subscription
         $subscription = Subscription::query()->where(
@@ -52,39 +53,109 @@ class SubscriptionController extends Controller
             ]
         )->first();
 
+        $paymentMethod = null;
+        $existingPaymentMethod = PaymentMethod::query()->where('payment_type', $paymentMethodType)->first();
+        if ($existingPaymentMethod) {
+            $paymentMethod = $existingPaymentMethod;
+        } else {
+
+            $customer = $this->gateway->customer()->create([
+                'firstName' => Auth::user()->name,
+                'lastName' => "",
+                'company' => '',
+                'email' => Auth::user()->email,
+                'phone' => '',
+                'fax' => '',
+                'website' => ''
+            ]);
+            if ($customer->success) {
+                $paymentMethodResult = $this->gateway->paymentMethod()->create([
+                    'customerId' => $customer->id,
+                    'paymentMethodNonce' => $nonce,
+                ]);
+
+                if ($paymentMethodResult->success) {
+
+                    $paymentMethod = PaymentMethod::create(
+                        [
+                            'user_id' => Auth::id(),
+                            'customer_id' => $customer->id,
+                            'payment_type' => $paymentMethodType,
+                            'masked_number',
+                            'paypal_email' => $paymentMethod == 'Paypal' ? $paymentMethodResult->email : "",
+                            'card_image_url' => $paymentMethodResult->imageUrl,
+                            'token' => $paymentMethodResult->token,
+                        ]
+                    );
+                }
+            }
+        }
+
+        
         if ($subscription) {
-            //user already subscribed so we will update the subscription.
+
+            //use payment method token to create subscription
+            $subscriptionResult = $this->gateway->subscription()->create(
+                [
+                    'paymentMethodToken' => $paymentMethod->token,
+                    'planId' => $planId
+                ]
+            );
+
+            if ($subscriptionResult->success) {
+                //update the subscription
+                $subscription->status = 'Active';
+                $subscription->plan_id = $planId;
+                $subscription->subscription_id = $subscriptionResult->id;
+                $subscription->save();
+                $message = "Subscrition created successfully";
+
+                //redirect the user to Stats Page
+                return redirect(route('stats'))->with('message', $message);
+            } else {
+                $message = "An error occcured while creating subscription please try again later";
+                // show the error message.
+                return redirect('dashboard')->with('error', 'An error occured while creating subscription please try again later');
+            }
+            
+
         } else {
             // this is the first time to subscribe to we will create the subscription
+
+            $subscriptionResult = $this->gateway->subscription()->create(
+                [
+                    'paymentMethodToken' => $existingPaymentMethod->token,
+                    'planId' => $planId
+                ]
+            );
+            if ($subscriptionResult->success) {
+                $message = "Subscrition created successfully";
+                return redirect(route('stats'))->with('message', $message);
+            } else {
+                return redirect('dashboard')->with('error', 'An error occured while creating subscription please try again later');
+            }
         }
-       
+    }
 
-        $paymentMethod = $this->gateway->paymentMethod()->find('fsgjht0s');
-        // print_r(json_encode($paymentMethod))
-        // $customer = $this->gateway->customer()->create([
-        //     'firstName' => 'Mike',
-        //     'lastName' => 'Jones',
-        //     'company' => 'Jones Co.',
-        //     'email' => 'mike.jones@example.com',
-        //     'phone' => '281.330.8004',
-        //     'fax' => '419.555.1235',
-        //     'website' => 'http://example.com'
-        // ]);
-        // dd($customer);
-        $paypalToken = 'f3hs61wg';
+    public function cancelSubscription(Request $request)
+    {
+        $subscriptionId = $request->input('subscription_id');
+        $result = $this->gateway->subscription()->cancel($subscriptionId);
+        if ($result->success) {
+            $subscription = Subscription::query()->when('subscription_id', $subscriptionId)->first();
+            $subscription->status = 'Cancelled';
+            $subscription->save();
+            $message = 'Subscription was cancelled successfully';
+            return redirect()->with('message', $message);
+        } else {
+            $message = 'An error occurred while cancelling your subscription please try again later';
+            return redirect()->with('error', $message);
+        }
+    }
 
-        // $nonce = "e79cf7a2-2eba-0935-c879-2d9ca18402f4";
-        // $result = $this->gateway->paymentMethod()->create([
-        //     'customerId' => "204388807",
-        //     'paymentMethodNonce' => $nonce,
-        // ]);
-        $subscription = $this->gateway->subscription()->create([
-            'paymentMethodToken' => $paypalToken,
-            "planId" => "rc32"
-        ]);
-
-        //dd($result);
-        // dd($subscription);
-        return response()->json($subscription);
+    public function test()
+    {
+        $paymentMethod = $this->gateway->paymentMethod()->find('f3hs61wg');
+        return response()->json($paymentMethod);
     }
 }

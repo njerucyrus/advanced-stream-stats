@@ -38,6 +38,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'flush' => [
+                'message' => session('message'),
+                'error' => session('error'),
+                'info' => session('info')
+            ], 
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
