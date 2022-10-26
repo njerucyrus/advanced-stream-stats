@@ -48,7 +48,7 @@ class PaymentMethodController extends Controller
             $customerId = $previousPaymentMethod->customer_id;
         } else {
             $customer = $this->gateway->customer()->create();
-            $customerId = $customer->id;
+            $customerId = $customer->customer->id;
         }
 
 
@@ -67,13 +67,13 @@ class PaymentMethodController extends Controller
             $maskedNumber = "";
             $paymentType = "";
 
-            if ($result->cardType != '') {
+            if ($result->paymentMethod->cardType != '') {
                 $cardType = $result->cardType;
                 $paymentType = 'Credit Card';
-                $maskedNumber = $result->maskedNumber;
+                $maskedNumber = $result->paymentMethod->maskedNumber;
             } else {
                 $paymentType = 'Paypal';
-                $paypalEmail = $result->email;
+                $paypalEmail = $result->paymentMethod->email;
             }
 
             PaymentMethod::create([
@@ -83,7 +83,7 @@ class PaymentMethodController extends Controller
                 'paypal_email' => $paypalEmail,
                 'payment_type' => $paymentType,
                 'masked_number' => $maskedNumber,
-                'image_url' => $result->imageUrl
+                'image_url' => $result->paymentMethod->imageUrl
             ]);
             $message = "Payment method saved successfully";
         } else {
