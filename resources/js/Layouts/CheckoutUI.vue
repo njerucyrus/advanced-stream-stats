@@ -4,45 +4,54 @@ import braintree from 'braintree-web';
 import paypal from 'paypal-checkout';
 import { useForm } from '@inertiajs/inertia-vue3';
 
-defineProps({
+const props = defineProps({
     plan: Object,
 });
 
 
+const propPlan = props.plan;
 
 const hostedFieldInstance = ref(false);
 const nonce = ref("");
 const error = ref("");
+const paymentMethod = ref("");
 const loading = ref(true);
-const form = useForm({
-    "nonce": nonce.value,
 
-})
 
+const createSubscription = (selectedMethod, paymentNonce) => {
+    const form = useForm({
+        "nonce": paymentNonce,
+        "payment_method": selectedMethod,
+        'plan_id': propPlan.id
+
+    });
+    form.post(route('create_subscription'), {
+        onFinish: () => form.reset('nonce', 'payment_method'),
+    });
+}
 
 const payWithCreditCard = () => {
-    alert('You clicked credit card payment');
+
     if (hostedFieldInstance.value) {
-        //alert(this.createSubscription());
+
         error.value = "";
         nonce.value = "";
 
-        this.hostedFieldInstance.tokenize().then(payload => {
-            console.log(payload);
+        hostedFieldInstance.value.tokenize().then(payload => {
+
             nonce.value = payload.nonce;
+            paymentMethod.value = 'Credit Card';
+            createSubscription('Creadit Card', payload.nonce);
+
 
         }).catch(err => {
-            console.error(err);
+
             error.value = err.message;
         })
     }
 }
 
-const createSubscription = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('nonce'),
-    });
-}
+
 
 onMounted(() => {
     braintree.client.create({
@@ -106,17 +115,17 @@ onMounted(() => {
                 },
                 onAuthorize: (data, options) => {
                     return paypalCheckoutInstance.tokenizePayment(data).then(payload => {
-                        console.log(payload);
                         error.value = "";
                         nonce.value = payload.nonce;
+                        paymentMethod.value = 'Paypal'
+                        createSubscription('Paypal', payload.nonce);
                     })
                 },
                 onCancel: (data) => {
-                    console.log(data);
-                    console.log("Payment Cancelled");
+                    //Payment was canceled.
+                    error.value = 'Payment Request was cancelled'
                 },
                 onError: (err) => {
-                    console.error(err);
                     error.value = "An error occurred while processing the paypal payment.";
                 }
             }, '#paypalButton')
@@ -160,11 +169,11 @@ onMounted(() => {
                         </div>
                         <input type="hidden" v-model="plan_id" />
                         <button class="mt-4 mb-8 btn btn-primary btn-block col-md-6"
-                            @click.prevent="createSubscription">Pay
+                            @click.prevent="payWithCreditCard">Pay
                             with
                             Credi Card</button>
                         <hr />
-            
+                    
                         <div id="paypalButton"></div>
                     </form>
                 </div>

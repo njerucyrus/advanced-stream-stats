@@ -41,6 +41,7 @@ class SubscriptionController extends Controller
     }
     public function createSubscription(Request $request)
     {
+        
         $nonce = $request->input('nonce');
         $planId = $request->input('plan_id');
         $paymentMethodType = $request->input('payment_method');
@@ -68,25 +69,55 @@ class SubscriptionController extends Controller
                 'fax' => '',
                 'website' => ''
             ]);
+        
             if ($customer->success) {
-                $paymentMethodResult = $this->gateway->paymentMethod()->create([
-                    'customerId' => $customer->id,
-                    'paymentMethodNonce' => $nonce,
-                ]);
+                $paymentMethodResult = $this->gateway->paymentMethod()->create(
+                    [
+                        'customerId' => $customer->customer->id,
+                        'paymentMethodNonce' => $nonce,
+                    ]
+                );
+               
 
                 if ($paymentMethodResult->success) {
 
                     $paymentMethod = PaymentMethod::create(
                         [
                             'user_id' => Auth::id(),
-                            'customer_id' => $customer->id,
+                            'customer_id' => $customer->customer->id,
                             'payment_type' => $paymentMethodType,
                             'masked_number',
-                            'paypal_email' => $paymentMethod == 'Paypal' ? $paymentMethodResult->email : "",
-                            'card_image_url' => $paymentMethodResult->imageUrl,
-                            'token' => $paymentMethodResult->token,
+                            'paypal_email' => $paymentMethod == 'Paypal' ? $paymentMethodResult->paymentMethod->email : "",
+                            'card_image_url' => $paymentMethodResult->paymentMethod->imageUrl,
+                            'token' => $paymentMethodResult->paymentMethod->token,
                         ]
                     );
+
+                    $subscriptionResult = $this->gateway->subscription()->create(
+                        [
+                            'paymentMethodToken' => $paymentMethod->token,
+                            'planId' => $planId
+                        ]
+                    );
+
+                    dd($subscriptionResult);
+
+                    if ($subscriptionResult->success) {
+
+                        Subscription::create([
+                            "plan_id" => $planId,
+                            "user_id" => Auth::id(),
+                            "subscription_id" => $subscriptionResult->subscription->id
+
+                        ]);
+
+                        $message = "Subscrition created successfully";
+
+                        //redirect the user to Stats Page
+                        return redirect(route('stats'))->with('message', $message);
+                    } else {
+                        return redirect('dashboard')->with('error', 'An error occured while creating subscription please try again later');
+                    }
                 }
             }
         }
@@ -101,6 +132,8 @@ class SubscriptionController extends Controller
                     'planId' => $planId
                 ]
             );
+           
+          
 
             if ($subscriptionResult->success) {
                 //update the subscription
@@ -124,12 +157,19 @@ class SubscriptionController extends Controller
 
             $subscriptionResult = $this->gateway->subscription()->create(
                 [
-                    'paymentMethodToken' => $existingPaymentMethod->token,
+                    'paymentMethodToken' => $paymentMethod->token,
                     'planId' => $planId
                 ]
             );
+            
             if ($subscriptionResult->success) {
                 $message = "Subscrition created successfully";
+                Subscription::create([
+                    "plan_id" => $planId,
+                    "user_id" => Auth::id(),
+                    "subscription_id" => $subscriptionResult->subscription->id
+
+                ]);
                 return redirect(route('stats'))->with('message', $message);
             } else {
                 return redirect('dashboard')->with('error', 'An error occured while creating subscription please try again later');

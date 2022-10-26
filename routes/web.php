@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StreamStatsController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/subscriptions', [SubscriptionController::class, 'showSubscriptionForm']);
 
-Route::get('/subscriptions/create', [SubscriptionController::class, 'test']);
+Route::post('/subscriptions/create', [SubscriptionController::class, 'createSubscription'])->name('create_subscription');
+Route::get('/stats', [StreamStatsController::class, 'index'])->name('stats');
 
 require __DIR__ . '/auth.php';

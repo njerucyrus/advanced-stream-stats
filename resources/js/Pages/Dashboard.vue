@@ -5,10 +5,15 @@ import PaymentForm from '@/Layouts/PaymentForm.vue'
 import CheckoutUI from '@/Layouts/CheckoutUI.vue'
 import { Head } from '@inertiajs/inertia-vue3';
 
-defineProps({
-    'plans':Object,
-    'token':String
-})
+const props = defineProps({
+    'plans':Object
+
+});
+
+const plan = props.plans[0];
+
+
+
 
 </script>
 
@@ -30,7 +35,7 @@ defineProps({
                         <ul>
                             <li v-for="plan in plans" :key="plan.id" class="mt-2">
                         
-                                {{plan.name}} ${{plan.price}} for {{plan.billingFrequency}} months
+                                {{ plan.name }} ${{ plan.price }} for {{ plan.billingFrequency }} months
                             </li>
                         
                         </ul>
@@ -44,8 +49,8 @@ defineProps({
                                 <StatItem title="Messages" value="400"></StatItem>
                                 <StatItem title="Messages" value="400"></StatItem>
                             </div>
-                            <CheckoutUI ></CheckoutUI>
-                            <!-- <PaymentForm></PaymentForm> -->
+                            
+                            <CheckoutUI :plan=plan></CheckoutUI>
                         </div>
                     </div>
                 </div>

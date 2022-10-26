@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('payment_type')->nullable();
             $table->string('masked_number')->nullable();
             $table->string('paypal_email')->nullable();
-            $table->string('taken')->nullable();
+            $table->string('token')->nullable();
             $table->string('card_image_url')->nullable();
             $table->timestamps();
         });

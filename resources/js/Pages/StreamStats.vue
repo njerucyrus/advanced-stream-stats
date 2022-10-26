@@ -1,10 +1,7 @@
-<script>
- export default {
-    name: "StreamStat",
-    props: {
-
-    }
- }
+<script setup>
+ defineProps({
+    stats: Object
+ })
 </script>
 
 
@@ -12,7 +9,9 @@
        <Head title="Stream Stats" />
        <AuthenticatedLayout>
         <div class="py-12">
-            <h1>Hello there</h1>
+            <div class="aleart alert-success" v-if="$page.props.flash.message">{{ $page.props.flash.message }}</div>
+            <div class="aleart alert-danger" v-if="$page.props.flash.error">{{ $page.props.flash.error }}</div>
+            statics dashboard here
         </div>
        </AuthenticatedLayout>
 </template>
