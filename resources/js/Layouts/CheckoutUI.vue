@@ -4,12 +4,13 @@ import braintree from 'braintree-web';
 import paypal from 'paypal-checkout';
 import { useForm } from '@inertiajs/inertia-vue3';
 
+
 const props = defineProps({
-    plan: Object,
+    plan_id: String
 });
 
 
-const propPlan = props.plan;
+
 
 const hostedFieldInstance = ref(false);
 const nonce = ref("");
@@ -22,10 +23,11 @@ const createSubscription = (selectedMethod, paymentNonce) => {
     const form = useForm({
         "nonce": paymentNonce,
         "payment_method": selectedMethod,
-        'plan_id': propPlan.id
+        'plan_id':props.plan_id
 
+    
     });
-    form.post(route('create_subscription'), {
+    form.post(route('checkout'), {
         onFinish: () => form.reset('nonce', 'payment_method'),
     });
 }
@@ -126,7 +128,7 @@ onMounted(() => {
                     error.value = 'Payment Request was cancelled'
                 },
                 onError: (err) => {
-                    error.value = "An error occurred while processing the paypal payment.";
+                    error.value = "An error occurred while processing the paypal payment."+err;
                 }
             }, '#paypalButton')
         })
@@ -142,15 +144,14 @@ onMounted(() => {
         <div class="col-6 offset-3">
             <div class="alert alert-success" v-if="loading">Loading payment methods please wait...</div>
             <div class="card bg-light">
-                <div class="card-header">Payment Details</div>
+                <div class="card-header">Choose your preferred payment method below</div>
                 <div class="card-body">
-                    <div class="alert alert-success" v-if="nonce">
-                        Successfully generated nonce. {{ nonce }}
-                    </div>
+                   
                     <div class="alert alert-danger" v-if="error">
                         {{ error }}
                     </div>
-                    <form>
+                    <div id="paypalButton"></div>
+                    <form class="mt-8">
                         <div class="form-group">
                             <label>Credit Card Number</label>
                             <div id="creditCardNumber" class="form-control" style="padding: -8px;"></div>
@@ -174,7 +175,7 @@ onMounted(() => {
                             Credi Card</button>
                         <hr />
                     
-                        <div id="paypalButton"></div>
+                    
                     </form>
                 </div>
             </div>

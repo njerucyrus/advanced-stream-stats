@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/inertia-vue3';
+import { Head, Link } from '@inertiajs/inertia-vue3';
 
 const props = defineProps({
     'plans': Object
@@ -46,11 +46,11 @@ const props = defineProps({
                                                 <small class="text-gray-500 text-sm">/month</small>
                                             </h3>
 
-                                            <button type="button"
+                                            <Link :href="route('show_checkout_form', {planId: plans[1].id})"
                                                 class="inline-block px-6 py-2.5 bg-orange-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-orange-700 hover:shadow-lg focus:bg-orange-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-orange-700 active:shadow-lg transition duration-150 ease-in-out w-full"
                                                 data-mdb-ripple="true" data-ripple-color="orange">
                                                 Buy
-                                            </button>
+                                            </Link>
                                         </div>
                                         <div class="p-6">
                                             <ol class="list-inside">
@@ -96,10 +96,10 @@ const props = defineProps({
                                                 <strong>$ {{ plans[2].price }}</strong>
                                                 <small class="text-gray-500 text-sm">/year</small>
                                             </h3>
-                                            <a href="#"
+                                            <Link :href="route('show_checkout_form', {'planId': plans[2].id})"
                                                 class="no-underline inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out w-full">
                                                 Buy
-                                            </a>
+                                        </Link>
                                         </div>
                                         <div class="p-6">
                                             <ol class="list-inside">
@@ -182,10 +182,10 @@ const props = defineProps({
                                                 <strong>$ {{ plans[0].price }}</strong>
                                                 <small class="text-gray-500 text-sm">/year</small>
                                             </h3>
-                                            <button type="button"
+                                            <Link :href="route('show_checkout_form', {'planId': plans[0].id})"
                                                 class="text-white inline-block px-6 py-2.5 bg-green-500 text-blue-600 font-medium text-xs leading-tight uppercase rounded hover:text-white-700 hover:bg-green-700 focus:bg-green-700 focus:outline-none focus:ring-0 active:bg-green-700 transition duration-150 ease-in-out w-full">
                                                 Buy
-                                            </button>
+                                            </Link>
                                         </div>
                                         <div class="p-6">
                                             <ol class="list-inside">

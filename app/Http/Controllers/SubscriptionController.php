@@ -33,15 +33,17 @@ class SubscriptionController extends Controller
         $clientToken = $this->gateway->clientToken()->generate();
     }
 
-    public function showSubscriptionForm(Request $request)
+    public function showCheckoutForm($planId)
     {
-    //show the checkout form
+        //show the checkout form
+        return Inertia::render('CheckoutPage', [
+            'planId' => $planId
+        ]);
     }
-    public function createSubscription(Request $request)
+    public function checkout(Request $request)
     {
-        
-        $nonce = $request->input('nonce');
         $planId = $request->input('plan_id');
+        $nonce = $request->input('nonce');
         $paymentMethodType = $request->input('payment_method');
 
         //check if we have an existing subscription
@@ -137,7 +139,7 @@ class SubscriptionController extends Controller
                 //update the subscription
                 $subscription->status = 'Active';
                 $subscription->plan_id = $planId;
-                $subscription->subscription_id = $subscriptionResult->id;
+                $subscription->subscription_id = $subscriptionResult->subscription->id;
                 $subscription->save();
                 $message = "Subscrition created successfully";
 

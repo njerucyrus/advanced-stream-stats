@@ -23,7 +23,9 @@ use Inertia\Inertia;
 Route::get('/', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::post('/subscriptions/create', [SubscriptionController::class, 'createSubscription'])->name('create_subscription');
+
+Route::get('/subscriptions/checkout/{planId}/', [SubscriptionController::class, 'showCheckoutForm'])->name('show_checkout_form');
+Route::post('/subscriptions/checkout', [SubscriptionController::class, 'checkout'])->name('checkout');
 Route::get('/stats', [StreamStatsController::class, 'index'])->name('stats');
 
 require __DIR__ . '/auth.php';
