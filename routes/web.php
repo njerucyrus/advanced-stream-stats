@@ -21,8 +21,14 @@ use Inertia\Inertia;
 
 
 Route::get('/', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])->name('dashboard');
+    ->middleware(['auth', 'verified'])->name('index');
 
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::get('/transactions', [SubscriptionController::class, 'transactions'])->name('transactions');
+// Route::get('/subscriptions', [SubscriptionController::class, 'subscriptions'])->name('subscriptions');
 
 Route::get('/subscriptions/checkout/{planId}/', [SubscriptionController::class, 'showCheckoutForm'])->name('show_checkout_form');
 Route::post('/subscriptions/checkout', [SubscriptionController::class, 'checkout'])->name('checkout');
