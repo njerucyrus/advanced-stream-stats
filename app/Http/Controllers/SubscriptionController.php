@@ -100,7 +100,7 @@ class SubscriptionController extends Controller
                         ]
                     );
 
-                    dd($subscriptionResult);
+                    
 
                     if ($subscriptionResult->success) {
 

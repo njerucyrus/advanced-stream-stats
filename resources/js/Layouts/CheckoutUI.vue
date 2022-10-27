@@ -17,6 +17,8 @@ const nonce = ref("");
 const error = ref("");
 const paymentMethod = ref("");
 const loading = ref(true);
+const cardLoading = ref(false);
+const cardSuccess = ref("");
 
 
 const createSubscription = (selectedMethod, paymentNonce) => {
@@ -38,12 +40,15 @@ const payWithCreditCard = () => {
 
         error.value = "";
         nonce.value = "";
+        cardLoading.value = true;
 
         hostedFieldInstance.value.tokenize().then(payload => {
 
             nonce.value = payload.nonce;
             paymentMethod.value = 'Credit Card';
             createSubscription('Creadit Card', payload.nonce);
+            cardLoading.value = false;
+            cardSuccess.value = "Credit card payment request submitted for processing please wait...";
 
 
         }).catch(err => {
@@ -63,16 +68,23 @@ onMounted(() => {
             let options = {
                 client: clientInstance,
                 styles: {
-                    input: {
-                        'font-size': '14px',
+                    'input': {
+                        'font-size': '18px',
+
                         'font-family': 'Open Sans',
-                        'height': '32px',
-                        'padding': '0px'
+                        'height': '100%',
+
+                    },
+                    '.number': {
+                        'font-family': 'monospace',
+                    },
+                    '.valid': {
+                        'color': 'green'
                     }
                 },
                 fields: {
                     number: {
-                        selector: '#creditCardNumber',
+                        container: '#creditCardNumber',
                         placeholder: 'Enter Credit Card'
                     },
                     cvv: {
@@ -152,9 +164,13 @@ onMounted(() => {
                     </div>
                     <div id="paypalButton"></div>
                     <form class="mt-8">
+                                    <div class="alert alert-success" v-if="cardSuccess">Payment request sent for processing. Please wait while we validate
+                                        payment...</div>
+
                         <div class="form-group">
                             <label>Credit Card Number</label>
-                            <div id="creditCardNumber" class="form-control" style="padding: -8px;"></div>
+                            <div id="creditCardNumber" class="form-control form-control-lg">
+                            </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
@@ -169,14 +185,18 @@ onMounted(() => {
                             </div>
                         </div>
                         <input type="hidden" v-model="plan_id" />
-                        <button class="mt-4 mb-8 btn btn-primary btn-block col-md-6"
-                            @click.prevent="payWithCreditCard">Pay
-                            with
-                            Credi Card</button>
-                        <hr />
+                        
                     
                     
                     </form>
+                    <button v-if="!cardLoading" class="mt-4 mb-8 btn btn-primary btn-block col-md-6" @click.prevent="payWithCreditCard">
+                        <span>Pay with Credit Card</span>
+                    
+                    </button>
+                    <button v-else class="mt-4 mb-8 btn btn-primary btn-block col-md-12" @click.prevent="payWithCreditCard">
+                        <span>Sending request please wait...</span>
+                    </button>
+                    <hr />
                 </div>
             </div>
 
