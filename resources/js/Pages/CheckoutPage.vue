@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import StatItem from '@/Layouts/StatItem.vue'
-import PaymentForm from '@/Layouts/PaymentForm.vue'
 import CheckoutUI from '@/Layouts/CheckoutUI.vue'
 
 

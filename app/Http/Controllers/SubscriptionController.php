@@ -195,7 +195,15 @@ class SubscriptionController extends Controller
 
     public function test()
     {
+        // $collection = $this->gateway->transaction()->search([
+        //     Braintree\TransactionSearch::customerId()->is('the_customer_id'),
+        // ]);
+
+        // foreach ($collection as $transaction) {
+        //     echo $transaction->amount;
+        // }
         $paymentMethod = $this->gateway->paymentMethod()->find('f3hs61wg');
         return response()->json($paymentMethod);
+
     }
 }
